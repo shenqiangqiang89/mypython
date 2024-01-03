@@ -65,7 +65,7 @@ def parse(response):
     domain = base_urls[0]  + '.com'
     ctype = base_urls[-1]
     g_set.add(url)
-    html_doc  = response.content
+    html_doc = response.content
     soup = BSP4(html_doc, "lxml")
     paganat_node = soup.select("#Pagination .CURRENT a")
     last_page_a_node = paganat_node[-1]
