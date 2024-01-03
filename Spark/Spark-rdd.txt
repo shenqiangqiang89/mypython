@@ -1,0 +1,30 @@
+
+参考网站：
+https://spark.apache.org/docs/2.3.0/rdd-programming-guide.html#transformations
+
+RDD常用类型的操作
+  1. Transformations --- 转换函数
+      从已经存在的数据集生成一个新的数据集合
+
+      RDDA  --> transformations --> RDDB
+
+      (1) 比如map是一个转换函数，能将集合的每一个元素进行函数处理，返回一个代表结果的新的RDD
+      (2) 在spark中所有的 transformation 函数，都是lazy（延迟处理）的；仅仅会记录数据状态
+      (3) 只有等到action函数（聚集所有计算结果）的时候，才会触发执行计算
+         这样设计，使得spark计算更加高效（提高执行计算速度，减少存储空间）
+
+     Transformations 转换函数有哪些呢？
+       map / filter /group by / distinct /textFile
+
+
+  2. Actions  聚合函数
+     - 在数据集上，通过计算，得到结果值，返回给driver程序
+
+     比如 reduce是一个action函数，聚合RDD中所有的元素，返回结果数据集
+
+     action操作才会触发真正的计算，结果可以返回给driver；或者写数据到外部存储中
+
+     Actions  聚合函数 有哪些函数呢？
+
+          reduce / count / collect ...
+

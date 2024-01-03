@@ -1,4 +1,6 @@
 
+l = (print(page) for page in range(10))
+next(l)
 a = input("dwewee:")
 
 print(a)

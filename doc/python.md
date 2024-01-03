@@ -2861,6 +2861,8 @@ pip install requests  -i http://pypi.douban.com/simple  --trusted-host pypi.doub
 
  pip install bs4   -i http://pypi.douban.com/simple  --trusted-host pypi.douban.com
 
+pip install pandas  -i http://pypi.douban.com/simple  --trusted-host pypi.douban.com
+
 
 
 ##  MySQL SQL语句大全 
@@ -4893,3 +4895,594 @@ if __name__ == "__main__":
 同时操作2个英雄 #并发，交替操作两个英雄 
 
 并行：绝对的同时进行  
+
+
+
+##  网络编程基础 
+
+###  一. 网络模型 
+
+> 网络编程最主要的工作就是在发送端把信息通过规定好的协议进行组装包，在接收端按照规定好的协议把包进 行解析，从而提取出对应的信息，达到通信的目的。 
+
+ 作为一个 开发程序员，知道网络到底是怎么进行通信的，怎么进行工作的，为什么服务器能够接收到请求，做出响 应。这些原理应该是每个程序员应该了解的。 
+
+####  1.历史及起源 
+
+ 网络模型不是一开始就有的，在网络刚发展时，网络协议是由各互联网公司自己定义的，比如那时的巨头网络公司 IBM、微软、苹果、思科等等，他们每家公司都有自己的网络协议，各家的协议也是不能互通的，那时候大家觉得这 是可以的，但对消费者来说这实际上是技术垄断，因为你买了苹果的设备就不能用微软的设备，因为他们的协议不是 一样的，没有统一的标准来规范网络协议，都是这些公司的私有协议。 
+
+####  2. 网络模型与协议 
+
+#####  2.1 TCP/IP协议 
+
+ TCP/IP(Transmission Control Protocal/Internet Protocal，传输控制协议/网间网协议)是目前世界上应用最为广泛的 网络通信协议，它的流行与Internet的迅猛发展密切相关。TCP/IP最初是为互联网的原型ARPANET所设计的，目的是 提供一整套方便实用、能应用于多种网络上的协议，事实证明TCP/IP做到了这一点，它使网络互联变得容易起来，并 且使越来越多的网络加入其中，成为Internet的事实标准。日常生活中的大部分网络应用（如浏览网页、收发电子邮 件、QQ聊天）都是基于该系列协议。 
+
+ 为了减少协议设计的复杂性，大多数网络模型都是按层的方式来组织的。在分层网络模型中，每一层都为上一层提供 一定的服务，而把如何实现本层服务的细节对上一层加以屏蔽。上层只需要知道下层提供了什么功能以及对应于这些 功能的接口，而不必关心下一层如何实现这些功能。  
+
+#####  2.2 OSI 模型和TCP/IP模型的对比  
+
+ 开放系统互连参考模型为实现开放系统互连所建立的通信功能分层模型，简称OSI模型。 
+
+ 其目的是为异种计算机互连提供一个共同的基础和标准框架，并为保持相关标准的一致性和兼容性提供共同的参考。 
+
+ 但是由于种种原因，OSI模型始终没有得到广泛应用，当前普遍使用的是TCP/IP模型。  
+
+ 几乎所有的互联网设备都支持TCP/IP协议。TCP/IP协议已经成为事实上的国际标准和工业标准。 
+
+![](\img\企业微信截图_1671175397730.png)
+
+#####  2.3 TCP/IP各层功能 
+
+######  （1）应用层：  
+
+ 应用层是所有用户所面向的应用程序的统称。ICP/IP协议族在这一层面有着很多协议来支持不同的应用，许多大家所 熟悉的基于Internet的应用的实现就离不开这些协议。如我们进行万维网（WWW）访问用到了HTTP协议（超文本传 输协议）、文件传输用FTP协议、电子邮件发送用SMTP（简单邮件传输协议）、域名的解析用DNS协议、远程登录 用Telnet协议等等，还有近几年来十分流行的点对点共享文件协议，即BitTorrent协议，该协议基于HTTP协议。使用 该协议构建的BT下载工具有比特精灵、BitTorrent等，都是属于TCP/IP应用层的；就用户而言，看到的是由一个个软 件所构筑的大多为图形化的操作界面，而实际后台运行的便是上述协议。 
+
+######  （2）传输层：  
+
+ 传输层通过位于该层的TCP协议（传输控制协议）或UDP协议（用户数据报协议）在两台主机间传输数据。其中TCP 协议提供可靠的面向连接的服务，它保证数据能完整地按顺序地传送到目标计算机。它在传输数据前首先需要和目的 计算机建立连接，并且在数据传输过程中维持此链接，因此在速度上会有些损失。UDP提供简单的无连接服务，它不 保证数据能按顺序、正确地传送到目的地（但可由他的上层来保证），它不用建立连接，通常速度上要比TCP快些。 TCP协议和IP协议都需要网络层提供通往目的地的路由。传输层提供端到端，即应用程序之间的通信。该层的主要功 能有差错控制、传输确认和丢失重传等。 
+
+######  （3）网络层： 
+
+ 网络层是TCP/IP协议族中非常关键的一层，主要定义了IP地址格式，从而能够使得不同应用类型的数据在Internet上 通畅地传输，IP协议就是一个网络层协议。  
+
+ 网络层负责在发送端和接收端之间建立一条虚拟路径。IP协议并不保证数据能完整正确的到达目的地，这个任务由他 上面的传输层来完成。这一层的ARP协议（地址解析协议）和RARP协议（反向地址解析协议）用于IP地址和物理地 址（通常就是网卡地址）的相互转换。如果数据在传输过程中出现问题，该层的ICMP协议将生产错误报文。  
+
+######  （4）网络接口层： 
+
+ 这是TCP/IP软件的最低层，它包括多种逻辑链路控制盒媒体访问协议。负责将网络层发送来的数据分成帧，并通过物 理链路进行传送，或从网络上接收物理帧，抽取数据并转交给其上的网络层 
+
+![](\img\企业微信截图_16711755342618.png)
+
+#####  2.4. ISO模型各层的功能 
+
+######  （1）应用层： 
+
+ 指网络操作系统和具体的应用程序，对应WWW服务器、FTP服务器等应用软件。术语“应用层”并不是指运行在网络上 的某个特别应用程序，而是提供了一组方便程序开发者在自己的应用程序中使用网络功能的服务。应用层提供的服务 包括文件传输（FTP）、文件管理以及电子邮件的信息处理（SMTP）等。  
+
+######  （2）表示层： 
+
+ 内码转换、压缩与解压缩、加密与解密,充当应用程序和网络之间的“翻译官”角色。在表示层，数据将按照网络能理解 的方案进行格式化；这种格式化也因所使用网络的类型不同而不同。例如，IBM主机使用EBCDIC编码，而大部分PC 机使用的是ASCII码。在这种情况下，便需要会话层来完成这种转换。表示层协议还对图片和文件格式信息进行解码 和编码。表示层管理数据的解密与加密，如系统口令的处理。如果在Internet 上查询你银行账户，使用的即是一种安 全连接。  
+
+######  （3）会话层 
+
+ 负责在网络中的两节点之间建立和维持通信。功能包括：建立通信链接，保持会话过程通信链接的畅通，同步两个节 点之间的对话，决定通信是否被中断以及通信中断时决定从何处重新发送 例：使用全双工模式或半双工模式，如何 发起传输，如何结束传输，如何设定传输参数。会话层通过决定节点通信的优先级和通信时间的长短来设置通信期 限。  
+
+######  （4）传输层：  
+
+ 编定序号、控制数据流量、查错与错误处理，确保数据可靠、顺序、无错地从A点到传输到B 点。因为如果没有传输 层，数据将不能被接受方验证或解释，所以，传输层常被认为是O S I 模型中最重要的一层。传输协议同时进行流量 控制或是基于接收方可接收数据的快慢程度规定适当的发送速率。传输层按照网络能处理的最大尺寸将较长的数据包 进行强制分割并编号。例如：以太网无法接收大于1 5 0 0 字节的数据包。发送方节点的传输层将数据分割成较小的 数据片，同时对每一数据片安排一序列号，以便数据到达接收方节点的传输层时，能以正确的顺序重组。该过程即被 称为排序。在网络中，传输层发送一个A C K （应答）信号以通知发送方数据已被正确接收。如果数据有错或者数据 在一给定时间段未被应答，传输层将请求发送方重新发送数据。  
+
+######  （5）网络层： 
+
+ 定址、选择传送路径。网络层通过综合考虑发送优先权、网络拥塞程度、服务质量以及可选路由的花费来决定从一个 网络中节点A 到另一个网络中节点B 的最佳路径。在网络中，“路由”是基于编址方案、使用模式以及可达性来指引数 据的发送。网络层协议还能补偿数据发送、传输以及接收的设备能力的不平衡性。为完成这一任务，网络层对数据包 进行分段和重组。分段和重组 是指当数据从一个能处理较大数据单元的网络段传送到仅能处理较小数据单元的网络 段时，网络层减小数据单元的大小的过程。重组是重构被分段的数据单元。 
+
+######  （6）数据链路层： 
+
+ 同步、查错、制定MAC方法。它的主要功能是将从网络层接收到的数据分割成特定的可被物理层传输的帧。帧 (Frame)是用来移动数据的结构包，它不仅包括原始（未加工）数据，或称“有效荷载”，还包括发送方和接收方的网 络地址以及纠错和控制信息。其中的地址确定了帧将发送到何处，而纠错和控制信息则确保帧无差错到达。通常，发 送方的数据链路层将等待来自接收方对数据已正确接收的应答信号。数据链路层控制信息流量，以允许网络接口卡正 确处理数据。数据链路层的功能独立于网络和它的节点所采用的物理层类型。 
+
+######  （7）物理层： 
+
+ 传输信息的介质规格、将数据以实体呈现并传输的规格、接头规格。该层包括物理连网媒介，如电缆连线、连接器、 网卡等。物理层的协议产生并检测电压以便发送和接收携带数据的信号。尽管物理层不提供纠错服务，但它能够设定 数据传输速率并监测数 例：在你的桌面P C 上插入网络接口卡，你就建立了计算机连网的基础。换言之，你提供了 一个物理层。 
+
+
+
+###  二. 网络套接字  
+
+> 套接字是通信的基石，是支持TCP/IP协议的网络通信的基本操作单元。可以将套接字看作 不同主机间的进程进 行双向通信的端点，它构成了单个主机内及整个网络间的编程界面。套接 字存在于通信域中，通信域是为了处 理一般的线程通过套接字通信而引进的一种抽象概念。  
+>
+>  套 接字通常和同一个域中的套接字交换数据（数据交换也可能穿越域的界限，但这时一定要执行 某种解释程 序）。各种进程使用这个相同的域互相之间用Internet协议簇来进行通信。  
+
+ 四元组：（源IP，源端口，目的IP，目的端口） 
+
+####  1. 套接字工作原理 
+
+1.  要通过互联网进行通信，你至少需要一对套接字，其中一个运行于客户机端，我们称之为 ClientSocket，另一 个运行于服务器端，我们称之为ServerSocket。 
+2.  根据连接启动的方式以及本地套接字要连接的目标，套接字之间的连接过程可以分为三个 步骤：服务器监听， 客户端请求，连接确认。  
+3.  所谓服务器监听，是服务器端套接字并不定位具体的客户端套接字，而是处于等待连接的 状态，实时监控网络 状态。  
+4.  所谓客户端请求，是指由客户端的套接字提出连接请求，要连接的目标是服务器端的套接 字。为此，客户端的 套接字必须首先描述它要连接的服务器的套接字，指出服务器端套接字的 地址和端口号，然后就向服务器端套 接字提出连接请求。 
+5.  所谓连接确认，是指当服务器端套接字监听到或者说接收到客户端套接字的连接请求，它 就响应客户端套接字 的请求，建立一个新的线程，把服务器端套接字的描述发给客户端，一旦 客户端确认了此描述，连接就建立好 了。而服务器端套接字继续处于监听状态，继续接收其他 客户端套接字的连接请求。 
+
+#### 2. TCP和UDP网络通信过程 
+
+1.  TCP通信过程  
+
+   ![](\img\企业微信截图_16711757862548.png)
+
+   
+
+2.  UDP通信过程 
+
+   ![](\img\企业微信截图_16711758209462.png)
+
+###  三. UDP 和 TCP 的区别 
+
+|            | TCP            | UDP        |
+| ---------- | -------------- | ---------- |
+| 连接性     | 面向连接       | 面向无连接 |
+| 传输可靠性 | 可靠           | 不可靠     |
+| 传输模式   | 流             | 数据报     |
+| 应用场景   | 传输大量的数据 | 少量数据   |
+| 速度       | 慢             | 快         |
+
+
+
+####  TCP： 
+
+ TCP 的可靠体现在传输数据之前，会有三次握手来建立连接。在数据传完后，还会断开连接用来节约系统资源。在数 据传递时，有确认机制、重传机制、拥塞控制机制以保证传输的可靠性，但这些机制都会消耗大量的时间和系统资 源，每个连接都会占用系统的 CPU、内存等硬件资源，所以也导致 TCP 容易被人利用，比如 DDOS、CC 等攻击。  
+
+ 一般用于文件传输、收发邮件或远程登录等对数据准确性要求高的场景。 
+
+####  UDP：  
+
+ UDP 没有 TCP 那些可靠的机制，所以在数据传递时，如果网络质量不好，就会很容易丢包。但 UDP 也是无法避免 攻击的，比如：UDP Flood 攻击。  
+
+ 一般用于即时通讯、在线视频、网络电话等对传输效率要求高，但对准确性要求相对低的场景。 
+
+
+
+###  四. TCP 的三次握手和四次挥手 
+
+####  TCP三次握手  
+
+ 所谓三次握手(Three-way Handshake)，是指建立一个TCP连接时，需要客户端和服务器总共发送3个包。 
+
+ 三次握手的目的是连接服务器指定端口，建立TCP连接,并同步连接双方的序列号和确认号并交换 TCP 窗口大小信息. 在socket编程中，客户端执行connect()时。将触发三次握手。 
+
+![](\img\企业微信截图_16711762051977.png)
+
+####  TCP 四次挥手
+
+ TCP 四次挥手 TCP的连接的拆除需要发送四个包，因此称为四次挥手(four-way handshake)。客户端或服务器均可 主动发起挥手动作，在socket编程中，任何一方执行close()操作即可产生挥手操作。  
+
+![](\img\企业微信截图_16711763668025.png)
+
+ 扩展：  
+
+ TIME_WAIT状态所带来的影响： 
+
+ 当某个连接的一端处于TIME_WAIT状态时，该连接将不能再被使用。事实上，对于我们比较有现实意义的是，这个端 口将不能再被使用。某个端口处于TIME_WAIT状态(其实应该是这个连接)时，这意味着这个TCP连接并没有断开(完全 断开)，那么，如果你bind这个端口，就会失败。对于服务器而言，如果服务器突然crash掉了，那么它将无法再 2MSL内重新启动，因为bind会失败。解决这个问题的一个方法就是设置socket的SO_REUSEADDR选项。这个选项意 味着你可以重用一个地址。 
+
+
+
+##  Python 进行网络编程 
+
+###  1. Python TCP通信实现 
+
+#### socket()函数
+
+ Python 中，我们用 socket（）函数来创建套接字，语法格式如下：  
+
+```
+socket.socket([family[, type[, proto]]])
+```
+
+**参数**
+
+-  family: 套接字家族可以使AF_UNIX或者AF_INET 
+- type: 套接字类型可以根据是面向连接的还是非连接分为 SOCK_STREAM 或 SOCK_DGRAM 
+- protocol: 一般不填默认为0. 
+
+**注：**
+
+ socket只能发送字节类型的数据 所以在发送时要将发送的数据通过str.encode() 转为字节类型，接收时在通过 str.decode()转为字符串。 
+
+#### Socket 对象(内建)方法 
+
+| 函数                                 | 描述                                                         |
+| ------------------------------------ | ------------------------------------------------------------ |
+| 服务器端套接字                       |                                                              |
+| s.bind()                             | 绑定地址（host,port）到套接字， 在AF_INET下,以元组 （host,port）的形式表示地址。 |
+| s.listen()                           | 开始TCP监听。backlog指定在拒绝连接之前，操作系统可以挂起的 最大连接数量。该值至少为1，大部分应用程序设为5就可以了。 |
+| s.accept()                           | 被动接受TCP客户端连接,(阻塞式)等待连接的到来                 |
+| 客户端套接字                         |                                                              |
+| s.connect()                          | 主动初始化TCP服务器连接，一般address的格式为元组 （hostname,port），如果连接出错，返回socket.error错误。 |
+| s.connect_ex()                       | connect()函数的扩展版本,出错时返回出错码,而不是抛出异常      |
+| 公共用途的套接字函数                 |                                                              |
+| s.recv()                             | 接收TCP数据，数据以字符串形式返回，bufsize指定要接收的最大 数据量。flag提供有关消息的其他信息，通常可以忽略。 |
+| s.send()                             | 发送TCP数据，将string中的数据发送到连接的套接字。返回值是要 发送的字节数量，该数量可能小于string的字节大小。 |
+| s.sendall()                          | 完整发送TCP数据，完整发送TCP数据。将string中的数据发送到连 接的套接字，但在返回之前会尝试发送所有数据。成功返回None， 失败则抛出异常。 |
+| s.recvfrom()                         | 接收UDP数据，与recv()类似，但返回值是（data,address）。其中 data是包含接收数据的字符串，address是发送数据的套接字地址。 |
+| s.sendto()                           | 发送UDP数据，将数据发送到套接字，address是形式为（ipaddr， port）的元组，指定远程地址。返回值是发送的字节数。 |
+| s.close()                            | 关闭套接字                                                   |
+| s.getpeername()                      | 返回连接套接字的远程地址。返回值通常是元组（ipaddr,port）。  |
+| s.getsockname()                      | 返回套接字自己的地址。通常是一个元组(ipaddr,port)            |
+| s.setsockopt(level,optname,value)    | 设置给定套接字选项的值。                                     |
+| s.getsockopt(level,optname[.buflen]) | 返回套接字选项的值。                                         |
+| s.settimeout(timeout)                | 设置套接字操作的超时期，timeout是一个浮点数，单位是秒。值为 None表示没有超时期。一般，超时期应该在刚创建套接字时设置， 因为它们可能用于连接的操作（如connect()） |
+| s.gettimeout()                       | 返回当前超时期的值，单位是秒，如果没有设置超时期，则返回 None。 |
+| s.fileno()                           | 返回套接字的文件描述符。                                     |
+| s.setblocking(flag)                  | 如果flag为0，则将套接字设为非阻塞模式，否则将套接字设为阻塞 模式（默认值）。非阻塞模式下，如果调用recv()没有发现任何数 据，或send()调用无法立即发送数据，那么将引起socket.error异 常。 |
+| s.makefile()                         | 创建一个与该套接字相关连的文件                               |
+
+#### socket异常 
+
+| Exception       | 解释                                                   |
+| --------------- | ------------------------------------------------------ |
+| socket.error    | 由Socket相关错误引发                                   |
+| socket.herror   | 由地址相关错误引发                                     |
+| socket.gaierror | 由地址相关错误，如getaddrinfo()或getnameinfo()引发     |
+| socket.timeout  | 当socket出现超时时引发。超时时间由settimeout()提前设定 |
+
+####  交互过程 
+
+##### TCP服务端： 
+
+###### 1 创建套接字，绑定套接字到本地IP与端口 
+
+> s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)，s.bind()  
+
+###### 2 开始监听连接  
+
+> s.listen() 
+
+###### 3 进入循环，不断接受客户端的连接请求 
+
+> s.accept() 
+
+###### 4 然后接收传来的数据，并发送给对方数据 
+
+> s.recv() , s.send() 
+
+###### 5 传输完毕后，关闭套接 
+
+> s.close()  
+
+
+
+##### TCP客户端: 
+
+######  1 创建套接字，连接远端地址 
+
+> socket.socket(socket.AF_INET,socket.SOCK_STREAM) , s.connect() 
+
+######  2 连接后发送数据和接收数据  
+
+> s.send(), s.recv() 
+
+######  3 传输完毕后，关闭套接字 
+
+> s.close() 
+
+
+
+###  2. TCP协议的Python实现 
+
+ 服务器端：  
+
+```python
+from socket import *
+from time import ctime
+
+HOST = ''
+PORT = 21567
+BUFSIZ = 1024
+ADDR = (HOST, PORT)
+tcpSerSock = socket(AF_INET, SOCK_STREAM) ##创建服务器TCP套接字
+tcpSerSock.bind(ADDR)
+tcpSerSock.listen(5)
+while True:
+    print('waiting for connection...')
+    tcpCliSock, addr = tcpSerSock.accept() ##等待客户端连接
+    print('...connected from:', addr)    
+    while True:
+        data = tcpCliSock.recv(BUFSIZ) ##监听客户端是否发送消息
+        print(data)
+        if not data:
+            break
+        
+tcpCliSock.send(data)
+tcpCliSock.close()
+tcpSerSock.close()
+```
+
+ 客户端代码： 
+
+```python
+from socket import *
+HOST = 'localhost'
+PORT = 21567
+BUFSIZ = 1024
+ADDR = (HOST, PORT)
+tcpCliSock = socket(AF_INET, SOCK_STREAM) ##创建客户端TCP套接字
+tcpCliSock.connect(ADDR) ##连接服务器
+while True:
+    data = input('> ')
+    if not data:
+    	break
+    tcpCliSock.send(data.encode(encoding='utf8'))
+    data = tcpCliSock.recv(BUFSIZ) ##监听客户端发送消息
+    if not data:
+    	break
+    print(data)
+tcpCliSock.close()
+```
+
+###  3. Python UDP通信实现 
+
+> UDP则是面向无连接的协议。 
+>
+> 使用UDP协议时，不需要建立连接，只需要知道对方的IP地址和端口号，就可以直接发数据包。但是，能不能 到达就不知道了。 
+>
+> 虽然用UDP传输数据不可靠，但它的优点是和TCP比，速度快，对于不要求可靠到达的数据，就可以使用UDP 协议。 
+
+ 服务器端代码： 
+
+```python
+import socket
+'''
+使用UDP协议时，不需要建立连接，只需要知道对方的IP地址和端口号，就可以直接发数据包。但是，能不能到达就不知道
+了。
+虽然用UDP传输数据不可靠，但它的优点是和TCP比，速度快，对于不要求可靠到达的数据，就可以使用UDP协议。
+我们来看看如何通过UDP协议传输数据。和TCP类似，使用UDP的通信双方也分为客户端和服务器。服务器首先需要绑定端口
+绑定端口和TCP一样，但是不需要调用listen()方法，而是直接接收来自任何客户端的数据
+'''
+# ipv4 SOCK_DGRAM指定了这个Socket的类型是UDP
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+# 绑定 客户端口和地址:
+s.bind(('127.0.0.1', 9999))
+print('Bind UDP on 9999...')
+while True:
+    # 接收数据 自动阻塞 等待客户端请求:
+    data, addr = s.recvfrom(1024)
+    print('Received from %s:%s.' % addr)
+    s.sendto('Hello, %s!' % data, addr)
+    # recvfrom()方法返回数据和客户端的地址与端口，这样，服务器收到数据后，直接调用sendto()就可以把数据用UDP发给客户端。
+
+```
+
+ 客户端代码 
+
+```python
+import socket
+'''
+客户端使用UDP时，首先仍然创建基于UDP的Socket，然后，不需要调用connect()，直接通过sendto()给服务器发数
+据：
+'''
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+for data in ['python', 'java', 'c']:
+    # 发送数据:
+    s.sendto(data, ('127.0.0.1', 9999))
+    # 接收数据:
+    print(s.recv(1024))
+s.close()
+```
+
+
+
+##  Select， Poll，Epoll 
+
+###  1. Select 
+
+ select最早于1983年出现在4.2BSD中，它通过一个select()系统调用来监视多个文件描述符的数组，当select()返回 后，该数组中就绪的文件描述符便会被内核修改标志位，使得进程可以获得这些文件描述符从而进行后续的读写操 作。  
+
+ select目前几乎在所有的平台上支持，其良好跨平台支持也是它的一个优点，事实上从现在看来，这也是它所剩不多 的优点之一。 
+
+ select的一个缺点在于单个进程能够监视的文件描述符的数量存在最大限制，在Linux上一般为1024，不过可以通过 修改宏定义甚至重新编译内核的方式提升这一限制。 
+
+ 另外，select()所维护的存储大量文件描述符的数据结构，随着文件描述符数量的增大，其复制的开销也线性增长。 同时，由于网络响应时间的延迟使得大量TCP连接处于非活跃状态，但调用select()会对所有socket进行一次线性扫 描，所以这也浪费了一定的开销。  
+
+ Select是一种线性扫描方式处理 
+
+ 在python中，select函数是一个对底层操作系统的直接访问的接口。它用来监控sockets、files和pipes，等待IO完成 （Waiting for I/O completion）。当有可读、可写或是异常事件产生时，select可以很容易的监控到。  
+
+ 在python中，select函数是一个对底层操作系统的直接访问的接口。它用来监控sockets、files和pipes，等待IO完成 （Waiting for I/O completion）。当有可读、可写或是异常事件产生时，select可以很容易的监控到。  
+
+###  2. Poll 
+
+ poll在1986年诞生于System V Release 3，它和select在本质上没有多大差别，但是poll没有最大文件描述符数量的 限制。 
+
+ poll和select同样存在一个缺点就是，包含大量文件描述符的数组被整体复制于用户态和内核的地址空间之间，而不 论这些文件描述符是否就绪，它的开销随着文件描述符数量的增加而线性增大。 
+
+ 另外，select()和poll()将就绪的文件描述符告诉进程后，如果进程没有对其进行IO操作，那么下次调用select()和 poll()的时候将再次报告这些文件描述符，所以它们一般不会丢失就绪的消息，这种方式称为水平触发（Level Triggered）。  
+
+###   3. Epoll  
+
+ 直到Linux2.6才出现了由内核直接支持的实现方法，那就是epoll，它几乎具备了之前所说的一切优点，被公认为 Linux2.6下性能最好的多路I/O就绪通知方法。 
+
+ 直到Linux2.6才出现了由内核直接支持的实现方法，那就是epoll，它几乎具备了之前所说的一切优点，被公认为 Linux2.6下性能最好的多路I/O就绪通知方法。 
+
+ 直到Linux2.6才出现了由内核直接支持的实现方法，那就是epoll，它几乎具备了之前所说的一切优点，被公认为 Linux2.6下性能最好的多路I/O就绪通知方法。 
+
+ 另一个本质的改进在于epoll采用基于事件的就绪通知方式。在select/poll中，进程只有在调用一定的方法后，内核才 对所有监视的文件描述符进行扫描，而epoll事先通过epoll_ctl()来注册一个文件描述符，一旦基于某个文件描述符就 绪时，内核会采用类似callback的回调机制，迅速激活这个文件描述符，当进程调用epoll_wait()时便得到通知。 
+
+###  使用 select 
+
+ 在python中，select函数是一个对底层操作系统的直接访问的接口。它用来监控sockets、files和pipes，等待IO完成 （Waiting for I/O completion）。当有可读、可写或是异常事件产生时，select可以很容易的监控到。 select.select（rlist, wlist, xlist[, timeout]） 传递三个参数，一个为输入而观察的文件对象列表，一个为输出而观察 的文件对象列表和一个观察错误异常的文件列表。第四个是一个可选参数，表示超时秒数。其返回3个tuple，每个 tuple都是一个准备好的对象列表，它和前边的参数是一样的顺序。 
+
+**当我们调用select()时： **
+
+1、上下文切换转换为内核态 
+
+2、将fd从用户空间复制到内核空间 
+
+3、内核遍历所有fd，查看其对应事件是否发生 
+
+4、如果没发生，将进程阻塞，当设备驱动产生中断或者timeout时间后，将进程唤醒，再次进行遍历 
+
+5、返回遍历后的fd 
+
+6、将fd从内核空间复制到用户空间  
+
+```
+通过socket建立网络连接的步骤:
+至少需要2个套接字, server和client
+需要建立socket之间的连接, 通过连接来进行收发data
+client 和 server连接的过程:
+1. 建立server的套接字,绑定主机和端口,并监听client的连接请求
+2. client套接字根据server的地址发出连接请求, 连接到server的socket上; client socket需要提供自己的
+socket fd,以便server socket回应
+3. 当server监听到client连接请求时, 响应请求, 建立一个新的线程, 把server fd 发送给client
+而后, server继续监听其他client请求, 而client和server通过socket连接互发data通信
+```
+
+**select方法 **
+
+ fd_r_list, fd_w_list, fd_e_list ``= select.select(rlist, wlist, xlist, [timeout]) 
+
+ 参数： 可接受四个参数（前三个必须） 
+
+- rlist: wait until ready for reading 
+- wlist: wait until ready for writing 
+- xlist: wait for an “exceptional condition” 
+- timeout: 超时时间 
+
+ 返回值：三个列表  
+
+ fd_r_list： 读列表， fd_w_list：写列表， fd_e_list ：异常列表  
+
+###  4. 案例分析  
+
+ 服务器端代码： 
+
+```python
+import socket, select, threading
+host = socket.gethostname()
+port = 5963
+addr = (host, port)
+
+inputs = []
+fd_name = {}
+def who_in_room(w):
+    name_list = []
+    for k in w:
+    	name_list.append(w[k])
+    return name_list
+
+def conn():
+    print('wait connecting...')
+    ss = socket.socket()
+    ss.bind(addr)
+    ss.listen(5)
+    return ss
+
+def new_coming(ss):
+    client, add = ss.accept()
+    print('欢迎 %s %s' % (client, add))
+    wel = '''聊天室，请输入您的名称:'''
+    try:
+        client.send(wel.encode(encoding='utf8'))
+        name = client.recv(1024).decode(encoding='utf8')
+        inputs.append(client)
+        fd_name[client] = name
+        nameList = "当前聊天室内，有如下成员： %s" % (who_in_room(fd_name))
+        client.send(nameList.encode(encoding='utf8'))
+    except Exception as e:
+    	print(e)
+
+def server_run():
+    ss = conn()
+    inputs.append(ss)
+    
+    while True:
+        rList, wList, eList = select.select(inputs, [], [])
+        for temp in rList:
+            if temp is ss:
+            	new_coming(ss)
+            else:
+                disconnect = False
+                try:
+                    data = temp.recv(1024) #bytes
+                    data = data.decode(encoding='utf8') #str
+                    user_name = fd_name[temp] #bytes
+                    data = user_name + ' say : ' + data
+                    #data = data.decode('utf8')
+                except socket.error:
+                    data = fd_name[temp] + ' leave the room'
+                    disconnect = True
+                if disconnect:
+                    inputs.remove(temp)
+                    print(f"disconnect message:{data}")
+                    for other in inputs:
+                        if other != ss and other != temp:
+                        try:
+                            other.send(data.encode(encoding='utf8'))
+                        except Exception as e:
+                            print(e)
+                    del fd_name[temp]
+                else:
+                    print(f"connect message: {data}")
+                    for other in inputs:
+                        if other != ss and other != temp:
+                            try:
+                            	other.send(data.encode(encoding='utf8'))
+                            except Exception as e:
+                            	print(e)
+
+if __name__ == '__main__':
+server_run()
+```
+
+
+
+ 客户端代码：  
+
+```python
+import socket, select, threading, sys;
+
+host = socket.gethostname()
+
+addr = (host, 5963)
+
+def conn():
+    s = socket.socket()
+    s.connect(addr)
+    return s
+
+def lis(s):
+    my = [s]
+    while True:
+        r, w, e = select.select(my, [], [])
+        if s in r:
+            try:
+            	print(s.recv(1024).decode(encoding='utf8'))
+            except socket.error:
+            	print('socket is error')
+            	exit()
+
+def talk(s):
+    while True:
+        try:
+            info = input('')
+            s.send(info.encode(encoding='utf8'))
+        except Exception as e:
+            print(e)
+            exit()
+
+def main():
+    ss = conn()
+    t = threading.Thread(target=lis, args=(ss,))
+    t.start()
+    t1 = threading.Thread(target=talk, args=(ss,))
+    t1.start()
+
+if __name__ == '__main__':
+	main()
+```
+
+ 启动一个服务器端代码，启动两个客户端代码；两个客户端进行通信，中间经过服务器进行中转。 
+
+  扩展：考虑采用python配色方案来处理上述网络场景。 
+
+
+
+##  采用tcp协议和UDP协议实现简单的聊天功能 
+

@@ -21,7 +21,7 @@ class User(OrmBase):
     pass_word = Column(String(64))
 '''
 '''
-第二针创建表
+第二种创建表
 '''
 user = Table('user', metadata,
              Column('id',INTEGER, primary_key = True, autoincrement=True),
